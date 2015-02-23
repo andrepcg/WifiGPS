@@ -37,7 +37,8 @@ public class GUI extends JDialog {
 
     Random rand = new Random();
 
-    Pattern ssid_regex = Pattern.compile("^BSSID [0-9]+ : (.+)");
+    Pattern ssid_regex = Pattern.compile("^SSID [0-9]+ : (.+)");
+    Pattern bssid_regex = Pattern.compile(" +BSSID [0-9]+ +: (.+)");
     Pattern signal_regex = Pattern.compile(" +Signal +: ([0-9]+)%");
 
     public static String execCmd(String cmd) throws java.io.IOException {
@@ -52,24 +53,28 @@ public class GUI extends JDialog {
 
         try {
             String wificmdout = execCmd("netsh wlan show networks mode=bssid");
+            //System.out.println(wificmdout);
             String[] cmdSplit = wificmdout.split("\r\n\r\n");
 
             for(String network : cmdSplit){
-                Matcher m = ssid_regex.matcher(network);
-                String ssid;
-                int signal;
+                Matcher m3 = bssid_regex.matcher(network);
+                String ssid = null;
+                int signal = 0;
                 int ind;
 
-                if(m.matches()){
-                    ssid = m.group(1).toLowerCase();
+                if(network.startsWith("SSID")){
+                    if(m3.find())
+                        ssid = m3.group(1).toLowerCase();
+
                     if((ind = Arrays.asList(wlans_ssid).indexOf(ssid)) >= 0){
                         Matcher m2 = signal_regex.matcher(network);
-                        if(m.matches()){
-                            signal = Integer.parseInt(m.group(1));
-                            int[][] t = grids.get(ind);
-                            t[y][x] = signal;
-                            System.out.println("SSID");
-                        }
+
+                        if(m2.find())
+                            signal = Integer.parseInt(m2.group(1));
+                        int[][] t = grids.get(ind);
+                        t[y][x] = signal;
+                        System.out.println("BSSID: " + ssid + " | Signal: " + signal);
+
                     }
 
                 }

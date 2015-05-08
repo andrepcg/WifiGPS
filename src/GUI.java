@@ -26,20 +26,14 @@ public class GUI extends JDialog {
     public static final int GRID_WIDTH = 32;
     public static final int GRID_HEIGHT = 32;
 
-    public int[][] wifiA = new int[22][35];
-    public int[][] wifib = new int[22][35];
-    public int[][] wifiC = new int[22][35];
-
     public ArrayList<int[][]> grids = new ArrayList();
 
-    public String[] wlans_ssid = {"00:1f:9f:ff:47:62", ""};
+    public String[] wlans_ssid = {"a4:b1:e9:44:08:ad", ""};
 
 
     Random rand = new Random();
 
-    Pattern ssid_regex = Pattern.compile("^SSID [0-9]+ : (.+)");
-    Pattern bssid_regex = Pattern.compile(" +BSSID [0-9]+ +: (.+)");
-    Pattern signal_regex = Pattern.compile(" +Signal +: ([0-9]+)%");
+    Pattern ssid_rssi_regex = Pattern.compile("(([a-f0-9]{2}:)+[a-f0-9]{2}) (-[0-9]+)");
 
     public static String execCmd(String cmd) throws java.io.IOException {
         java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A");
@@ -52,32 +46,25 @@ public class GUI extends JDialog {
         int v = -100;
 
         try {
-            String wificmdout = execCmd("netsh wlan show networks mode=bssid");
+            String wificmdout = execCmd("airport -s");
             //System.out.println(wificmdout);
             String[] cmdSplit = wificmdout.split("\r\n\r\n");
 
             for(String network : cmdSplit){
-                Matcher m3 = bssid_regex.matcher(network);
-                String ssid = null;
-                int signal = 0;
-                int ind;
 
-                if(network.startsWith("SSID")){
-                    if(m3.find())
-                        ssid = m3.group(1).toLowerCase();
-
-                    if((ind = Arrays.asList(wlans_ssid).indexOf(ssid)) >= 0){
-                        Matcher m2 = signal_regex.matcher(network);
-
-                        if(m2.find())
-                            signal = Integer.parseInt(m2.group(1));
+            	Matcher m = ssid_rssi_regex.matcher(network);
+            	if(m.find()){
+            		String ssid = m.group(1);
+            		int signal = Integer.parseInt(m.group(3));
+                    int ind;
+            		if((ind = Arrays.asList(wlans_ssid).indexOf(ssid)) >= 0){
                         int[][] t = grids.get(ind);
                         t[y][x] = signal;
                         System.out.println("BSSID: " + ssid + " | Signal: " + signal);
 
                     }
+            	}
 
-                }
 
             }
         } catch (IOException e) {

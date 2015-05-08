@@ -33,13 +33,31 @@ public class GUI extends JDialog {
 
     Random rand = new Random();
 
-    Pattern ssid_rssi_regex = Pattern.compile("(([a-f0-9]{2}:)+[a-f0-9]{2}) (-[0-9]+)");
+    Pattern ssid_rssi_regex = Pattern.compile("(([a-f0-9]{2}:)+[a-f0-9]{2}) (-[0-9]+));
 
     public static String execCmd(String cmd) throws java.io.IOException {
         java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
 
+    public static String getSignalSSID(String ssid, String cmdOut) throws java.io.IOException {
+        String[] cmdSplit = wificmdout.split("\r\n\r\n");
+
+            for(String network : cmdSplit){
+
+                Matcher m = ssid_rssi_regex.matcher(network);
+                if(m.find()){
+                    String id = m.group(1);
+                    int signal = Integer.parseInt(m.group(3));
+                    int ind;
+                    if(id.compareTo(ssid) == 0)
+                        return signal;
+
+                }
+
+
+            }
+    }
 
 
     public void setRSSI(int x, int y){

@@ -28,7 +28,7 @@ public class GUI extends JDialog {
 
     public ArrayList<int[][]> grids = new ArrayList();
 
-    public String[] wlans_ssid = {"a4:b1:e9:44:08:ad", ""};
+    public String[] wlans_ssid = {"a4:b1:e9:44:08:ad"};
 
 
     Random rand = new Random();
@@ -40,23 +40,25 @@ public class GUI extends JDialog {
         return s.hasNext() ? s.next() : "";
     }
 
-    public static String getSignalSSID(String ssid, String cmdOut) throws java.io.IOException {
+    public static int getSignalSSID(String ssid, String cmdOut) throws java.io.IOException {
         String[] cmdSplit = wificmdout.split("\r\n\r\n");
 
-            for(String network : cmdSplit){
+        for(String network : cmdSplit){
 
-                Matcher m = ssid_rssi_regex.matcher(network);
-                if(m.find()){
-                    String id = m.group(1);
-                    int signal = Integer.parseInt(m.group(3));
-                    int ind;
-                    if(id.compareTo(ssid) == 0)
-                        return signal;
-
-                }
-
+            Matcher m = ssid_rssi_regex.matcher(network);
+            if(m.find()){
+                String id = m.group(1);
+                int signal = Integer.parseInt(m.group(3));
+                int ind;
+                if(id.compareTo(ssid) == 0)
+                    return signal;
 
             }
+
+
+        }
+
+        return -1;
     }
 
 
@@ -65,7 +67,18 @@ public class GUI extends JDialog {
 
         try {
             String wificmdout = execCmd("airport -s");
+
+            for(int i = 0; i < wlans_ssid.length; i++){
+                int signal = getSignalSSID(wlans_ssid[i], wificmdout);
+                int index = Arrays.asList(wlans_ssid).indexOf(wlans_ssid[i]);
+                int[][] t = grids.get(index);
+                t[y][x] = signal;
+                System.out.println("BSSID: " + wlans_ssid[i] + " | Signal: " + signal);
+            }
+
+
             //System.out.println(wificmdout);
+            /*
             String[] cmdSplit = wificmdout.split("\r\n\r\n");
 
             for(String network : cmdSplit){
@@ -85,6 +98,7 @@ public class GUI extends JDialog {
 
 
             }
+            */
         } catch (IOException e) {
             e.printStackTrace();
         }

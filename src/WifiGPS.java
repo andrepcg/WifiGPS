@@ -21,6 +21,9 @@ public class WifiGPS {
     public static final int GRID_WIDTH = 32;
     public static final int GRID_HEIGHT = 32;
 
+    int grelhaX = 35;
+    int grelhaY = 22;
+
     public ArrayList<int[][]> grids = new ArrayList();
 
     public String[] wlans_ssid = {"a4:b1:e9:44:08:ad"};
@@ -89,12 +92,15 @@ public class WifiGPS {
     public void exportarDados() throws IOException {
         FileWriter fw = new FileWriter("dados_exportados.txt");
 
+        int rede = 0;
         for(int[][] g : grids){
-            for (int y = 0; y < 22; y++) {
-                for (int x = 0; y < 35; x++) {
-                    fw.write(x + " " + y + " " + g[y][x]);
-                }
+            fw.write(wlans_ssid[rede++] + "\n" + grelhaX + " " + grelhaY + "\n");
+            for (int y = 0; y < grelhaY; y++) {
+                for (int x = 0; x < grelhaX; x++)
+                    fw.write(g[y][x] + " ");
+                fw.write("\n");
             }
+            fw.write("\n\n");
         }
 
         fw.close();
@@ -103,7 +109,7 @@ public class WifiGPS {
     public WifiGPS(){
 
         for(int i = 0; i < wlans_ssid.length; i++)
-            grids.add(new int[22][35]);
+            grids.add(new int[grelhaY][grelhaX]);
 
 
     }
@@ -118,7 +124,7 @@ public class WifiGPS {
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
                 }
 
-                WifiGPS gps = new WifiGPS();
+                final WifiGPS gps = new WifiGPS();
                 Grid grid = new Grid(36, 25, gps);
 
                 JFrame window = new JFrame();
@@ -148,7 +154,12 @@ public class WifiGPS {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         //exporta os dados
-                        System.out.println("xixixixi");
+                        System.out.println("A exportar dados");
+                        try {
+                            gps.exportarDados();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
                     }
                 });
                 menu.add(menuItem);
@@ -185,7 +196,7 @@ public class WifiGPS {
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();
                     }
-                    //gps.setRSSI((int)x, (int)y);
+                    gps.setRSSI((int)x, (int)y);
                     g.setCellGreen((int) x, (int) y);
                 }
             });

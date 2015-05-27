@@ -18,15 +18,31 @@ import java.util.regex.Pattern;
 public class WifiGPS {
 
 
-    public static final int GRID_WIDTH = 32;
-    public static final int GRID_HEIGHT = 32;
+    public static final int GRID_WIDTH = 32 / 2;
+    public static final int GRID_HEIGHT = 32 / 2;
 
     int grelhaX = 35;
     int grelhaY = 22;
 
     public ArrayList<int[][]> grids = new ArrayList();
 
-    public String[] wlans_ssid = {"a4:b1:e9:44:08:ad"};
+    public String[] wlans_ssid = {
+            "a4:b1:e9:44:08:ad",
+            "0c:47:3d:09:df:c8",
+            "00:17:ca:d5:97:13",
+            "00:05:ca:93:2c:08",
+            "0c:47:3d:09:df:c9",
+            "00:26:5b:16:bf:08",
+            "00:26:5b:16:bf:09",
+            "a4:b1:e9:ed:46:74",
+            "08:76:ff:87:fe:7e",
+            "00:26:5b:1c:b4:99",
+            "00:1f:9f:ff:37:36",
+            "9c:97:26:9b:94:47",
+            "64:70:02:b2:6c:2a"
+    };
+
+    HashMap<String, Double> foundAPS = new HashMap<>();
 
 
     Random rand = new Random();
@@ -55,7 +71,7 @@ public class WifiGPS {
 
         }
 
-        return -1;
+        return 0;
     }
 
 
@@ -81,12 +97,12 @@ public class WifiGPS {
                 t[y][x] /= 3;
             }
 
-            //System.out.println(grids.get(0)[y][x]);
+            System.out.println(grids.get(0)[y][x]);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //grid[y][x] = rand.nextInt(100);
+
     }
 
     public void exportarDados() throws IOException {
@@ -112,11 +128,21 @@ public class WifiGPS {
             grids.add(new int[grelhaY][grelhaX]);
 
 
+
     }
 
 
     public static void main(String[] a) {
         EventQueue.invokeLater(new Runnable() {
+            protected JComponent makeTextPanel(String text) {
+                JPanel panel = new JPanel(false);
+                JLabel filler = new JLabel(text);
+                filler.setHorizontalAlignment(JLabel.CENTER);
+                panel.setLayout(new GridLayout(1, 1));
+                panel.add(filler);
+                return panel;
+            }
+
             @Override
             public void run() {
                 try {
@@ -128,18 +154,15 @@ public class WifiGPS {
                 Grid grid = new Grid(36, 25, gps);
 
                 JFrame window = new JFrame();
-                window.setSize(1180, 840);
+                window.setSize(1240 / 2, 1000 / 2);
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                window.add(grid);
+                //window.add(grid);
                 window.setVisible(true);
 
                 JMenuBar menuBar;
-                JMenu menu, submenu;
+                JMenu menu;
                 JMenuItem menuItem;
-                JRadioButtonMenuItem rbMenuItem;
-                JCheckBoxMenuItem cbMenuItem;
 
-                //Create the menu bar.
                 menuBar = new JMenuBar();
 
 //Build the first menu.
@@ -165,8 +188,18 @@ public class WifiGPS {
                 menu.add(menuItem);
                 window.setJMenuBar(menuBar);
 
+                JTabbedPane tabbedPane = new JTabbedPane();
+                //JComponent panel1 = makeTextPanel("Panel #1");
+                tabbedPane.addTab("Tab 1", null, grid, "Does nothing");
+                JComponent panel2 = makeTextPanel("Panel #2");
+                tabbedPane.addTab("Tab 2", null, panel2,
+                        "Does twice as much nothing");
+
+                window.add(tabbedPane);
             }
         });
+
+
     }
 
     static class Listener implements MouseListener {
@@ -191,11 +224,6 @@ public class WifiGPS {
                     y = y / GRID_HEIGHT;
 
                     g.fillCell((int) x, (int) y);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
                     gps.setRSSI((int)x, (int)y);
                     g.setCellGreen((int) x, (int) y);
                 }
@@ -229,12 +257,12 @@ public class WifiGPS {
 
     public static class Grid extends JPanel {
 
-        int width = 1168;
-        int height = 800;
+        int width = 1168 / 2;
+        int height = 800 / 2;
         int x, y;
         Image backImg;
 
-        int squareWidth = 32, squareHeight = 32;
+        int squareWidth = 32 / 2, squareHeight = 32 / 2;
 
         private ArrayList<Square> fillCells;
 
@@ -263,7 +291,7 @@ public class WifiGPS {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 
-            g.drawImage(backImg, 10, 10, backImg.getWidth(this), backImg.getHeight(this), this);
+            g.drawImage(backImg, 10, 10, backImg.getWidth(this) / 2, backImg.getHeight(this) / 2, this);
 
             // desenha grelha
             g.setColor(Color.BLACK);

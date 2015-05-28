@@ -30,7 +30,6 @@ public class WifiGPS {
             "a4:b1:e9:44:08:ad",
             "0c:47:3d:09:df:c8",
             "00:17:ca:d5:97:13",
-            "00:05:ca:93:2c:08",
             "0c:47:3d:09:df:c9",
             "00:26:5b:16:bf:08",
             "00:26:5b:16:bf:09",
@@ -103,6 +102,11 @@ public class WifiGPS {
             e.printStackTrace();
         }
 
+        for(int i = 0 ; i < grids.size(); i++)
+            System.out.println(wlans_ssid[i] +": " + grids.get(0)[y][x]);
+        System.out.println("----");
+
+
     }
 
     public void exportarDados() throws IOException {
@@ -122,6 +126,34 @@ public class WifiGPS {
         fw.close();
     }
 
+    public String gerarDadosTreino() throws IOException {
+        String dados = "";
+        FileWriter fw = new FileWriter("train.data");
+        for(int y = 0 ; y < grelhaY; y++){
+            for(int x = 0 ; x < grelhaX; x++){
+
+                int count = 0;
+                for(int i = 0 ; i < grids.size(); i++){
+                    if(grids.get(i)[y][x] == 0)
+                        count++;
+                }
+
+                if(count == grids.size())
+                    continue;
+
+                for(int i = 0 ; i < grids.size(); i++){
+                    fw.write(grids.get(i)[y][x] + " ");
+                    dados += grids.get(i)[y][x] + " ";
+                }
+                fw.write("\n");
+                dados += "\n";
+            }
+        }
+
+        return dados;
+
+    }
+
     public WifiGPS(){
 
         for(int i = 0; i < wlans_ssid.length; i++)
@@ -131,202 +163,15 @@ public class WifiGPS {
 
     }
 
-
-    public static void main(String[] a) {
-        EventQueue.invokeLater(new Runnable() {
-            protected JComponent makeTextPanel(String text) {
-                JPanel panel = new JPanel(false);
-                JLabel filler = new JLabel(text);
-                filler.setHorizontalAlignment(JLabel.CENTER);
-                panel.setLayout(new GridLayout(1, 1));
-                panel.add(filler);
-                return panel;
-            }
-
-            @Override
-            public void run() {
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                }
+    static JTextArea caixa_texto = new JTextArea();
+    static JTextField input = new JTextField();
+/*
 
                 final WifiGPS gps = new WifiGPS();
                 Grid grid = new Grid(36, 25, gps);
 
-                JFrame window = new JFrame();
-                window.setSize(1240 / 2, 1000 / 2);
-                window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                //window.add(grid);
-                window.setVisible(true);
-
-                JMenuBar menuBar;
-                JMenu menu;
-                JMenuItem menuItem;
-
-                menuBar = new JMenuBar();
-
-//Build the first menu.
-                menu = new JMenu("A Menu");
-                menuBar.add(menu);
-
-//a group of JMenuItems
-                menuItem = new JMenuItem("Exportar dados");
+*/
 
 
-                menuItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        //exporta os dados
-                        System.out.println("A exportar dados");
-                        try {
-                            gps.exportarDados();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                });
-                menu.add(menuItem);
-                window.setJMenuBar(menuBar);
 
-                JTabbedPane tabbedPane = new JTabbedPane();
-                //JComponent panel1 = makeTextPanel("Panel #1");
-                tabbedPane.addTab("Tab 1", null, grid, "Does nothing");
-                JComponent panel2 = makeTextPanel("Panel #2");
-                tabbedPane.addTab("Tab 2", null, panel2,
-                        "Does twice as much nothing");
-
-                window.add(tabbedPane);
-            }
-        });
-
-
-    }
-
-    static class Listener implements MouseListener {
-
-        Grid g;
-        WifiGPS gps;
-
-        public Listener(WifiGPS gps, Grid g){
-            this.g = g;
-            this.gps = gps;
-
-        }
-
-        @Override
-        public void mouseClicked(final MouseEvent e) {
-            Thread thread = new Thread(new Runnable() {
-
-                public void run() {
-                    float x = e.getX() - 10;
-                    float y = e.getY() - 10;
-                    x = x / GRID_WIDTH;
-                    y = y / GRID_HEIGHT;
-
-                    g.fillCell((int) x, (int) y);
-                    gps.setRSSI((int)x, (int)y);
-                    g.setCellGreen((int) x, (int) y);
-                }
-            });
-            thread.start();
-
-
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-
-        }
-
-    }
-
-    public static class Grid extends JPanel {
-
-        int width = 1168 / 2;
-        int height = 800 / 2;
-        int x, y;
-        Image backImg;
-
-        int squareWidth = 32 / 2, squareHeight = 32 / 2;
-
-        private ArrayList<Square> fillCells;
-
-        private WifiGPS gps;
-
-        public Grid(int xSquares, int ySquares, WifiGPS gps) {
-            this.width = xSquares * squareWidth;
-            this.height = squareHeight * ySquares;
-            x = xSquares;
-            y = ySquares;
-            this.gps = gps;
-
-            fillCells = new ArrayList<>();
-
-            try {
-                backImg = ImageIO.read(new File("./planta_casa_nogrid.png"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            Listener l = new Listener(gps, this);
-            this.addMouseListener(l);
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-
-            g.drawImage(backImg, 10, 10, backImg.getWidth(this) / 2, backImg.getHeight(this) / 2, this);
-
-            // desenha grelha
-            g.setColor(Color.BLACK);
-            g.drawRect(10, 10, width, height);
-
-            for (double i = 10; i <= width; i += width / x)
-                g.drawLine((int)i, 10, (int)i, height+10);
-
-
-            for (double i = 10; i <= height; i += height / y)
-                g.drawLine(10, (int)i, width+10, (int)i);
-            //
-
-            for (Square fillCell : fillCells) {
-                int cellX = 10 + (fillCell.x * squareWidth);
-                int cellY = 10 + (fillCell.y * squareHeight);
-                g.setColor(fillCell.color);
-                g.fillRect(cellX, cellY, squareWidth, squareHeight);
-            }
-        }
-
-        public void fillCell(int x, int y) {
-            fillCells.add(new Square(x, y, new Color(255, 0, 0, 64)));
-            repaint();
-        }
-
-        public void setCellGreen(int x, int y) {
-            for(Square s : fillCells){
-                if(s.x == x && s.y == y){
-                    s.color = new Color(0, 255, 0, 64);
-                }
-            }
-            //fillCells.add(new Square(x, y, Color.RED));
-            repaint();
-        }
-
-    }
 }

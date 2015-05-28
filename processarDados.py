@@ -101,7 +101,7 @@ y_test = []
 y_test_x_int = []
 y_test_y_int = []
 
-ds = SDS(12, 2)
+ds = SDS(len(redes), 2)
 for input, target in arr:
 	y_test.append(target)
 	y_test_y_int.append(target[1] * 22)
@@ -109,7 +109,7 @@ for input, target in arr:
 	ds.addSample(input, target)
 
 
-net = pickle.load( open( 'model.pkl', 'rb' ))
+#net = pickle.load( open( 'model.pkl', 'rb' ))
 
 
 
@@ -122,15 +122,15 @@ for i in range(10000):
     net = ga.learn(0)[0]
 '''
 
-'''
-net = buildNetwork(12, 16, 2, bias = True)
-trainer = BackpropTrainer( net, ds, learningrate=0.1, momentum=0.01) #learningrate=0.1, momentum=0.01
-trainer.trainUntilConvergence( verbose = False, validationProportion = 0.15, maxEpochs = 1000, continueEpochs = 10 )
+
+net = buildNetwork(len(redes), 16, 2, bias = True, hiddenclass=TanhLayer)
+trainer = BackpropTrainer( net, ds, learningrate=0.01, momentum=0.001) #learningrate=0.1, momentum=0.01
+trainer.trainUntilConvergence( verbose = False, maxEpochs=1000)
 pickle.dump( net, open( 'model.pkl', 'wb' ))
-'''
+
 
 '''
-net = buildNetwork(12, 16, 2, bias = True)
+net = buildNetwork(len(redes), 16, 2, bias = True)
 ga = CMAES(ds.evaluateModuleMSE, net, minimize=True)
 for i in range(2000):
     net = ga.learn(0)[0]
@@ -140,11 +140,10 @@ for i in range(2000):
 
 
 p = net.activateOnDataset( ds )
-p_x_int = []
-p_y_int = []
+p_f = []
+
 for i in range(len(p)):
-	p_x_int.append(p[i][0] * 35)
-	p_y_int.append(p[i][1] * 22)
+	p_f.append([p[i][0] * 35, p[i][1] * 22])
 	#print p[i].astype(int), y_test[i]
 
 
@@ -152,19 +151,20 @@ for i in range(len(p)):
 	#print p_y_int[i], y_test_y_int[i]
 
 
-xy = net.activate(dBmArray2quality([0, 0, 0, -92, -68, -74, -50, -49, 0, 0, 0, 0])) # 25, 3
+xy = net.activate(dBmArray2quality([0, 0, -92, -68, -74, -50, -49, 0, 0, 0, 0])) # 25, 3
 print 25, 3, xy[0] * 35, xy[1] * 22
 
-xy = net.activate(dBmArray2quality([0, 0, 0, -92, -62, -78, -57, -57, 0, 0, 0, 0])) # 24, 3
+xy = net.activate(dBmArray2quality([0, 0, -92, -62, -78, -57, -57, 0, 0, 0, 0])) # 24, 3
 print 24, 3, xy[0] * 35, xy[1] * 22
 
-xy = net.activate(dBmArray2quality([0, 0, 0, -86, -30, 0, -61, -61, 0, 0, -105, -109])) # 18, 14
+xy = net.activate(dBmArray2quality([0, 0, -86, -30, 0, -61, -61, 0, 0, -105, -109])) # 18, 14
 print 18, 14, xy[0] * 35, xy[1] * 22
 
 
-mseX = MSE( y_test_x_int, p_x_int )
-mseY = MSE( y_test_y_int, p_y_int )
-mse = (mseX + mseY) / 2.0
+y_test[:] = [[i[0] * 35, i[1] * 22] for i in y_test] 
+
+
+mse = MSE(y_test, p_f)
 rmse = sqrt( mse )
 
 print "testing MSE:", mse

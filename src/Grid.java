@@ -28,14 +28,24 @@ class Listener implements MouseListener {
         Thread thread = new Thread(new Runnable() {
 
             public void run() {
+
                 float x = e.getX() - 10;
                 float y = e.getY() - 10;
                 x = x / GRID_WIDTH;
                 y = y / GRID_HEIGHT;
 
-                g.fillCell((int) x, (int) y);
-                gps.setRSSI((int)x, (int)y);
-                g.setCellGreen((int) x, (int) y);
+                if (e.getButton() == 3) {
+                    g.addMarker((int)x, (int)y, new Color(0,0,255,64));
+                    float[] f = gps.getSignalForNetworks();
+                    GUI.printInputs(f);
+                    System.out.println((int)x / 35.0 + " " + (int)y / 22.0);
+
+                }
+                else {
+                    g.fillCell((int) x, (int) y);
+                    gps.setRSSI((int) x, (int) y);
+                    g.setCellGreen((int) x, (int) y);
+                }
             }
         });
         thread.start();

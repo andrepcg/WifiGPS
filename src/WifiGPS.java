@@ -29,7 +29,6 @@ public class WifiGPS {
     public String[] wlans_ssid = {
             "a4:b1:e9:44:08:ad",
             "0c:47:3d:09:df:c8",
-            "00:17:ca:d5:97:13",
             "0c:47:3d:09:df:c9",
             "00:26:5b:16:bf:08",
             "00:26:5b:16:bf:09",
@@ -99,12 +98,13 @@ public class WifiGPS {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+/*
         System.out.println(x + " " + y);
 
         for(int i = 0 ; i < grids.size(); i++)
             System.out.println(wlans_ssid[i] +": " + grids.get(i)[y][x]);
         System.out.println("----");
+        */
 
     }
 

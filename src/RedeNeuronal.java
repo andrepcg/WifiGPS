@@ -27,7 +27,7 @@ public class RedeNeuronal {
     }
 
     public void carregarRede(){
-        fann = new Fann("/Users/andrepcg/WifiGPS/fannj.net");
+        fann = new Fann("/Users/andrepcg/WifiGPS/bestann");
     }
 
     public void criarRede(int inputNeurons, int hiddenNeurons, int outputNeurons) throws IOException {

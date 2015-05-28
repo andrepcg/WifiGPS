@@ -10,7 +10,7 @@ import java.io.IOException;
 public class GUI {
     private JTabbedPane tabbedPane1;
     private JPanel panel1;
-    Grid mapa;
+    private JPanel mapa;
     private JPanel nn;
     private JTextArea caixa_info;
     private JButton button1;
@@ -18,6 +18,8 @@ public class GUI {
     private static JMenuBar menuBar;
     private JMenu menu;
     private JMenuItem menuItem;
+
+    Grid grid;
     WifiGPS gps;
 
     String dados;
@@ -31,7 +33,7 @@ public class GUI {
                 printInputs(sinais);
                 float[] resultados = redeneuronal.runInputs(sinais);
                 //mapa.fill
-                mapa.addMarker((int)(resultados[0] * 35), (int)(resultados[1] * 22), new Color(0, 255,255, 64));
+                grid.addMarker((int)(resultados[0] * 35), (int)(resultados[1] * 22), new Color(0, 255,255, 64));
             }
         });
     }
@@ -58,7 +60,8 @@ public class GUI {
     private void createUIComponents() {
         // TODO: place custom component creation code here
         gps = new WifiGPS();
-        mapa = new Grid(26,22,gps);
+        grid = new Grid(26,22,gps);
+        mapa = (JPanel) grid;
 
         menuBar = new JMenuBar();
 
@@ -102,7 +105,7 @@ public class GUI {
 
     }
 
-    void printInputs(float[] t){
+    static void printInputs(float[] t){
         for(float i : t){
             System.out.print(i + " ");
         }

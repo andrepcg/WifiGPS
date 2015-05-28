@@ -129,6 +129,9 @@ public class WifiGPS {
     public String gerarDadosTreino() throws IOException {
         String dados = "";
         FileWriter fw = new FileWriter("train.data");
+
+        int linhas = 0;
+
         for(int y = 0 ; y < grelhaY; y++){
             for(int x = 0 ; x < grelhaX; x++){
 
@@ -142,16 +145,29 @@ public class WifiGPS {
                     continue;
 
                 for(int i = 0 ; i < grids.size(); i++){
-                    fw.write(grids.get(i)[y][x] + " " + x + " " + y);
-                    dados += grids.get(i)[y][x] + " " + x + " " + y;
+                    //fw.write(grids.get(i)[y][x] + "\n" + x + " " + y);
+                    dados += dBm2percentage(grids.get(i)[y][x]) + "\n" + x + " " + y;
+                    linhas++;
                 }
                 fw.write("\n");
                 dados += "\n";
             }
         }
+        fw.write(linhas + " " + grids.size() + " 2 " + dados);
         fw.close();
 
-        return dados;
+        return linhas + " " + grids.size() + " 2 " + dados;
+
+    }
+
+    public double dBm2percentage(double dbm){
+
+        if (dbm <= -100 || dbm == 0)
+            return 0.0f;
+        else if (dbm >= -50)
+            return 1.0f;
+        else
+            return (2.0f * (dbm + 100))/ 100.0f;
 
     }
 
@@ -161,18 +177,6 @@ public class WifiGPS {
             grids.add(new int[grelhaY][grelhaX]);
 
 
-
     }
-
-    static JTextArea caixa_texto = new JTextArea();
-    static JTextField input = new JTextField();
-/*
-
-                final WifiGPS gps = new WifiGPS();
-                Grid grid = new Grid(36, 25, gps);
-
-*/
-
-
 
 }

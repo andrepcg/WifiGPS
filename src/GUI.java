@@ -20,7 +20,7 @@ public class GUI {
 
     String dados;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
@@ -35,7 +35,7 @@ public class GUI {
         frame.setJMenuBar(menuBar);
         frame.setVisible(true);
 
-
+        RedeNeuronal nn = new RedeNeuronal();
 
     }
 

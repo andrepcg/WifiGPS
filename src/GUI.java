@@ -41,8 +41,9 @@ public class GUI {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-        mapa = new Grid(26,22,null);
         gps = new WifiGPS();
+        mapa = new Grid(26,22,gps);
+
         menuBar = new JMenuBar();
 
         menu = new JMenu("A Menu");

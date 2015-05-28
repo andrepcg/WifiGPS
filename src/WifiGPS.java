@@ -96,14 +96,14 @@ public class WifiGPS {
                 t[y][x] /= 3;
             }
 
-            System.out.println(grids.get(0)[y][x]);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        System.out.println(x + " " + y);
+
         for(int i = 0 ; i < grids.size(); i++)
-            System.out.println(wlans_ssid[i] +": " + grids.get(0)[y][x]);
+            System.out.println(wlans_ssid[i] +": " + grids.get(i)[y][x]);
         System.out.println("----");
 
 
@@ -142,13 +142,14 @@ public class WifiGPS {
                     continue;
 
                 for(int i = 0 ; i < grids.size(); i++){
-                    fw.write(grids.get(i)[y][x] + " ");
-                    dados += grids.get(i)[y][x] + " ";
+                    fw.write(grids.get(i)[y][x] + " " + x + " " + y);
+                    dados += grids.get(i)[y][x] + " " + x + " " + y;
                 }
                 fw.write("\n");
                 dados += "\n";
             }
         }
+        fw.close();
 
         return dados;
 

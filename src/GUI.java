@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -9,16 +10,31 @@ import java.io.IOException;
 public class GUI {
     private JTabbedPane tabbedPane1;
     private JPanel panel1;
-    private JPanel mapa;
+    Grid mapa;
     private JPanel nn;
     private JTextArea caixa_info;
     private JButton button1;
+    private JButton button2;
     private static JMenuBar menuBar;
     private JMenu menu;
     private JMenuItem menuItem;
     WifiGPS gps;
 
     String dados;
+    static RedeNeuronal redeneuronal;
+
+    public GUI() {
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                float[] sinais = gps.getSignalForNetworks();
+                printInputs(sinais);
+                float[] resultados = redeneuronal.runInputs(sinais);
+                //mapa.fill
+                mapa.addMarker((int)(resultados[0] * 35), (int)(resultados[1] * 22), new Color(0, 255,255, 64));
+            }
+        });
+    }
 
     public static void main(String[] args) throws IOException {
         try {
@@ -35,7 +51,7 @@ public class GUI {
         frame.setJMenuBar(menuBar);
         frame.setVisible(true);
 
-        RedeNeuronal nn = new RedeNeuronal();
+        redeneuronal = new RedeNeuronal();
 
     }
 
@@ -83,5 +99,13 @@ public class GUI {
         menu.add(menuItem);
 
 
+
+    }
+
+    void printInputs(float[] t){
+        for(float i : t){
+            System.out.print(i + " ");
+        }
+        System.out.println();
     }
 }

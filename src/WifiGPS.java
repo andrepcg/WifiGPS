@@ -106,7 +106,36 @@ public class WifiGPS {
             System.out.println(wlans_ssid[i] +": " + grids.get(i)[y][x]);
         System.out.println("----");
 
+    }
 
+    public float[] getSignalForNetworks(){
+
+        float[] signals = new float[grids.size()];
+
+        try {
+            for(int te = 0; te < 3; te++) {
+                String wificmdout = execCmd("airport -s");
+
+                for (int i = 0; i < wlans_ssid.length; i++) {
+                    int signal = getSignalSSID(wlans_ssid[i], wificmdout);
+                    int index = Arrays.asList(wlans_ssid).indexOf(wlans_ssid[i]);
+                    signals[index] += dBm2percentage(signal);
+                    //System.out.println("BSSID: " + wlans_ssid[i] + " | Signal: " + signal);
+                }
+            }
+
+            for (int i = 0; i < wlans_ssid.length; i++) {
+                int index = Arrays.asList(wlans_ssid).indexOf(wlans_ssid[i]);
+                signals[index] /= 3.0;
+            }
+
+            return signals;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public void exportarDados() throws IOException {

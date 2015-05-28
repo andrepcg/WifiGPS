@@ -131,6 +131,11 @@ public class Grid extends JPanel {
         repaint();
     }
 
+    public void addMarker(int x, int y, Color c){
+        fillCells.add(new Square(x, y, c));
+        repaint();
+    }
+
     public void setCellGreen(int x, int y) {
         for(Square s : fillCells){
             if(s.x == x && s.y == y){

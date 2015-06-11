@@ -98,12 +98,13 @@ public class WifiGPS {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+/*
         System.out.println(x + " " + y);
 
         for(int i = 0 ; i < grids.size(); i++)
             System.out.println(wlans_ssid[i] +": " + grids.get(i)[y][x]);
         System.out.println("----");
+        */
 
     }
 

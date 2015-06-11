@@ -78,14 +78,34 @@ for y in range(22):
 	for x in range(35):
 
 		t = []
-		for rede in redes:
-			t.append(redes[rede][y][x])
+		#for rede in redes:
+			#t.append(redes[rede][y][x])
+
+		t.append(redes["a4:b1:e9:44:08:ad"][y][x])
+		t.append(redes["0c:47:3d:09:df:c8"][y][x])
+		t.append(redes["0c:47:3d:09:df:c9"][y][x])
+		t.append(redes["00:26:5b:16:bf:08"][y][x])
+		t.append(redes["00:26:5b:16:bf:09"][y][x])
+		t.append(redes["a4:b1:e9:ed:46:74"][y][x])
+		t.append(redes["08:76:ff:87:fe:7e"][y][x])
+		t.append(redes["00:26:5b:1c:b4:99"][y][x])
+		t.append(redes["00:1f:9f:ff:37:36"][y][x])
+		t.append(redes["9c:97:26:9b:94:47"][y][x])
+		t.append(redes["64:70:02:b2:6c:2a"][y][x])
 
 
 		if not all(v == 0 for v in t):
 			#bits = bitfield(x) + bitfield(y)
 			#arr.append([t, bits])
 			arr.append([t, [x/35.0,y/22.0]])
+
+'''
+			for i in range(len(t)):
+				print str(t[i]) + " ",
+
+			print ""
+			print str(x / 35.0) + " " + str(y / 22.0)
+'''
 
 			#print str(redes[rede][y][x]) + ",",
 
@@ -109,59 +129,52 @@ for input, target in arr:
 	ds.addSample(input, target)
 
 
-#net = pickle.load( open( 'model.pkl', 'rb' ))
+net = pickle.load( open( 'model.pkl', 'rb' ))
 
 
 
 #net = buildNetwork(12, 16, 12, bias = True, hiddenclass=TanhLayer)
-'''
-#Genetic algorithm
-net = buildNetwork(12, 16, 2, bias = True)
-ga = GA(ds.evaluateModuleMSE, net, minimize=True)
-for i in range(10000):
-    net = ga.learn(0)[0]
-'''
-
-
-net = buildNetwork(len(redes), 16, 2, bias = True, hiddenclass=TanhLayer)
-trainer = BackpropTrainer( net, ds, learningrate=0.01, momentum=0.001) #learningrate=0.1, momentum=0.01
-trainer.trainUntilConvergence( verbose = False, maxEpochs=1000)
-pickle.dump( net, open( 'model.pkl', 'wb' ))
-
 
 '''
+#Geneic algorithm
 net = buildNetwork(len(redes), 16, 2, bias = True)
-ga = CMAES(ds.evaluateModuleMSE, net, minimize=True)
-for i in range(2000):
+ga = GA(ds.evaluateModuleMSE, net, minimize=True)
+for i in range(1000):
+    net = ga.learn(0)[0]
+
+
+net = buildNetwork(len(redes), 16, 2, bias = True)
+ga = HillClimber(ds.evaluateModuleMSE, net, minimize=True)
+for i in range(6000):
     net = ga.learn(0)[0]
 '''
 
 
+
+
+net = buildNetwork(len(redes), 16, 2, bias = True)
+trainer = BackpropTrainer( net, ds, learningrate=0.0095, momentum=0.001) #learningrate=0.1, momentum=0.01
+trainer.trainUntilConvergence( verbose = False, maxEpochs=2500)
+
+
+pickle.dump( net, open( 'model.pkl', 'wb' ))
 
 
 p = net.activateOnDataset( ds )
 p_f = []
 
 for i in range(len(p)):
-	p_f.append([p[i][0] * 35, p[i][1] * 22])
-	#print p[i].astype(int), y_test[i]
+	p_f.append([int(p[i][0] * 35), int(p[i][1] * 22)])
 
 
-#for i in range(len(p)):
-	#print p_y_int[i], y_test_y_int[i]
-
-
-xy = net.activate(dBmArray2quality([0, 0, -92, -68, -74, -50, -49, 0, 0, 0, 0])) # 25, 3
-print 25, 3, xy[0] * 35, xy[1] * 22
-
-xy = net.activate(dBmArray2quality([0, 0, -92, -62, -78, -57, -57, 0, 0, 0, 0])) # 24, 3
-print 24, 3, xy[0] * 35, xy[1] * 22
-
-xy = net.activate(dBmArray2quality([0, 0, -86, -30, 0, -61, -61, 0, 0, -105, -109])) # 18, 14
-print 18, 14, xy[0] * 35, xy[1] * 22
+xy = net.activate([0.18, 0.0, 0.0, 0.82, 0.82, 0.0, 0.0, 0.0, 0.0, 0.62, 0.34]) # 25, 3
+print 20, 3, xy[0] * 35, xy[1] * 22
 
 
 y_test[:] = [[i[0] * 35, i[1] * 22] for i in y_test] 
+
+#for i in range(len(p)):
+	#print y_test[i][0], y_test[i][1], " -> ", p_f[i][0], p_f[i][1]
 
 
 mse = MSE(y_test, p_f)

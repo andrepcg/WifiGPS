@@ -18,6 +18,8 @@ public class GUI {
     private static JMenuBar menuBar;
     private JMenu menu;
     private JMenuItem menuItem;
+
+
     WifiGPS gps;
     Grid grid;
     String dados;
@@ -30,6 +32,7 @@ public class GUI {
                 float[] sinais = gps.getSignalForNetworks();
                 printInputs(sinais);
                 float[] resultados = redeneuronal.runInputs(sinais);
+
                 System.out.println("Coordenadas previstas: " + (int)(resultados[0] * 35) + " " + (int)(resultados[1] * 22));
                 grid.addMarker((int)(resultados[0] * 35), (int)(resultados[1] * 22), new Color(0, 255,255, 64));
             }
@@ -44,6 +47,7 @@ public class GUI {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+
             }
         });
     }
@@ -117,7 +121,7 @@ public class GUI {
 
     }
 
-    void printInputs(float[] t){
+    static void printInputs(float[] t){
         for(float i : t){
             System.out.print(i + " ");
         }

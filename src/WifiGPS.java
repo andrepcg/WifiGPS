@@ -29,7 +29,6 @@ public class WifiGPS {
     public String[] wlans_ssid = {
             "a4:b1:e9:44:08:ad",
             "0c:47:3d:09:df:c8",
-            "00:17:ca:d5:97:13",
             "0c:47:3d:09:df:c9",
             "00:26:5b:16:bf:08",
             "00:26:5b:16:bf:09",
@@ -174,18 +173,19 @@ public class WifiGPS {
                     continue;
 
                 for(int i = 0 ; i < grids.size(); i++){
-                    //fw.write(grids.get(i)[y][x] + "\n" + x + " " + y);
-                    dados += dBm2percentage(grids.get(i)[y][x]) + "\n" + x + " " + y;
-                    linhas++;
+
+                    dados += dBm2percentage(grids.get(i)[y][x]) + " ";
+
                 }
-                fw.write("\n");
-                dados += "\n";
+                linhas++;
+                dados += "\n" + x / (float)grelhaX + " " + y / (float) grelhaY + "\n";
             }
         }
-        fw.write(linhas + " " + grids.size() + " 2 " + dados);
+
+        fw.write(linhas + " " + grids.size() + " 2\n" + dados);
         fw.close();
 
-        return linhas + " " + grids.size() + " 2 " + dados;
+        return linhas + " " + grids.size() + " 2\n" + dados;
 
     }
 

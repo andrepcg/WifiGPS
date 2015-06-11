@@ -19,11 +19,12 @@ public class RedeNeuronal {
 
     public RedeNeuronal() throws IOException {
         criarRede(11, 16, 2);
-        treinarRede("/Users/andrepcg/WifiGPS/javaTest.txt");
+        treinarRede("/Users/andrepcg/WifiGPS/train.data");
 
-        float[] out = runInputs(new float[]{0.0f, 0.0f, 0.16f, 0.76f, 0.44f, 0.86f, 0.86f, 0.0f, 0.0f, 0.0f, 0.0f});
-        System.out.println("Expected: " + (int)(0.685714285714 * 35) + " " + (int)(0.136363636364 * 22));
+        float[] out = runInputs(new float[]{0.41333333f, 0.2f, 0.0f, 0.2f, 0.28f, 0.2f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
+        System.out.println("Expected: " + (int)(16) + " " + (int)(9));
         System.out.println("Got:" + (int)(out[0] * 35) +" " + (int)(out[1] * 22));
+
     }
 
     public void carregarRede(){
@@ -45,9 +46,9 @@ public class RedeNeuronal {
         Trainer trainer = new Trainer(fann);
 
         float desiredError = .0009f;
-        trainer.setTrainingAlgorithm(TrainingAlgorithm.FANN_TRAIN_RPROP);
+        trainer.setTrainingAlgorithm(TrainingAlgorithm.FANN_TRAIN_INCREMENTAL);
         //trainer.
-        float mse = trainer.train(trainFile, 10000, 200, desiredError);
+        float mse = trainer.train(trainFile, 5000, 200, desiredError);
         System.out.println("MSE: " + mse);
         fann.save("/Users/andrepcg/WifiGPS/fannj.net");
     }

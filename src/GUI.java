@@ -10,16 +10,16 @@ import java.io.IOException;
 public class GUI {
     private JTabbedPane tabbedPane1;
     private JPanel panel1;
-    Grid mapa;
+    private JPanel mapa;
     private JPanel nn;
     private JTextArea caixa_info;
-    private JButton button1;
+    private JButton treinarRedeButton;
     private JButton button2;
     private static JMenuBar menuBar;
     private JMenu menu;
     private JMenuItem menuItem;
     WifiGPS gps;
-
+    Grid grid;
     String dados;
     static RedeNeuronal redeneuronal;
 
@@ -30,11 +30,25 @@ public class GUI {
                 float[] sinais = gps.getSignalForNetworks();
                 printInputs(sinais);
                 float[] resultados = redeneuronal.runInputs(sinais);
-                //mapa.fill
-                mapa.addMarker((int)(resultados[0] * 35), (int)(resultados[1] * 22), new Color(0, 255,255, 64));
+                System.out.println("Coordenadas previstas: " + (int)(resultados[0] * 35) + " " + (int)(resultados[1] * 22));
+                grid.addMarker((int)(resultados[0] * 35), (int)(resultados[1] * 22), new Color(0, 255,255, 64));
+            }
+        });
+        treinarRedeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //String dados = caixa_info.toString();
+
+                try {
+                    redeneuronal.treinarRede("/Users/andrepcg/WifiGPS/train.data");
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
     }
+
+
 
     public static void main(String[] args) throws IOException {
         try {
@@ -51,14 +65,15 @@ public class GUI {
         frame.setJMenuBar(menuBar);
         frame.setVisible(true);
 
-        redeneuronal = new RedeNeuronal();
+        //redeneuronal = new RedeNeuronal();
 
     }
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
         gps = new WifiGPS();
-        mapa = new Grid(26,22,gps);
+        grid = new Grid(26,22,gps);
+        mapa = (JPanel) grid;
 
         menuBar = new JMenuBar();
 
